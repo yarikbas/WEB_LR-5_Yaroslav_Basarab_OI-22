@@ -1,3 +1,9 @@
 my-backend/node_modules/
+my-frontend/node_modules/
+my-frontend/dist/
 serviceAccountKey.json
 .env
+.env.*
+!.env.example
+!my-backend/.env.example
+!my-frontend/.env.example

@@ -1,0 +1,522 @@
+:root {
+  --primary-color: #d4a574;
+  --secondary-color: #8b4513;
+  --text-color: #333;
+  --bg-color: #fff;
+  --bg-light: #f9f9f9;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --radius: 8px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-color);
+  background: var(--bg-color);
+}
+
+/* ── Navbar ── */
+.navbar {
+  background: var(--secondary-color);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-brand {
+  color: var(--primary-color);
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 1rem 0;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 0;
+  list-style: none;
+}
+
+.navbar-links a {
+  display: block;
+  color: #fff;
+  text-decoration: none;
+  padding: 1rem 1.2rem;
+  font-size: 1rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.navbar-links a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--primary-color);
+}
+
+.navbar-links a.active {
+  color: var(--primary-color);
+  border-bottom: 3px solid var(--primary-color);
+}
+
+/* ── Page wrapper ── */
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.page-title {
+  font-size: 2rem;
+  color: var(--secondary-color);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* ── Menu controls ── */
+.menu-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.btn-sort {
+  background: var(--secondary-color);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-sort:hover {
+  background: var(--primary-color);
+  color: var(--secondary-color);
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+/* ── MenuItem card ── */
+.menu-card {
+  background: var(--bg-light);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.menu-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.menu-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.menu-card-body {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.menu-card-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--secondary-color);
+}
+
+.menu-card-price {
+  font-size: 1.05rem;
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.btn-ingredients {
+  margin-top: auto;
+  background: transparent;
+  border: 2px solid var(--primary-color);
+  color: var(--secondary-color);
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  align-self: flex-start;
+}
+
+.btn-ingredients:hover {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+/* ── Ingredients ── */
+.ingredients-list {
+  margin-top: 0.5rem;
+  padding: 0.7rem 1rem;
+  background: #fff;
+  border-radius: var(--radius);
+  border: 1px solid #e8d5b7;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.ingredients-list li {
+  background: var(--primary-color);
+  color: #fff;
+  font-size: 0.78rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+}
+
+/* ── Chefs ── */
+.chefs-intro {
+  text-align: center;
+  color: #555;
+  margin-bottom: 2rem;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.chefs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.chef-card {
+  background: var(--bg-light);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-align: center;
+  padding: 1.5rem 1rem;
+  transition: transform 0.2s;
+}
+
+.chef-card:hover {
+  transform: translateY(-4px);
+}
+
+.chef-card img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary-color);
+  margin-bottom: 0.8rem;
+}
+
+.chef-card h3 {
+  font-size: 1rem;
+  color: var(--secondary-color);
+  margin-bottom: 0.3rem;
+}
+
+.chef-card p {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+/* ── About ── */
+.about-description {
+  line-height: 1.8;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.about-advantages {
+  margin: 1.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.about-advantages li {
+  margin-bottom: 0.5rem;
+  color: var(--secondary-color);
+  font-weight: 500;
+}
+
+.map-wrapper {
+  margin: 2rem 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.map-wrapper iframe {
+  width: 100%;
+  height: 350px;
+  border: none;
+  display: block;
+}
+
+/* ── Reviews ── */
+.reviews-section {
+  margin-top: 2.5rem;
+}
+
+.reviews-title {
+  font-size: 1.4rem;
+  color: var(--secondary-color);
+  margin-bottom: 1rem;
+}
+
+.reviews-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  max-width: 520px;
+  margin-bottom: 2rem;
+}
+
+.reviews-form input,
+.reviews-form textarea {
+  padding: 0.7rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.reviews-form select {
+  padding: 0.7rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.reviews-form input:focus,
+.reviews-form textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.btn-submit {
+  align-self: flex-start;
+  background: var(--secondary-color);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-submit:hover {
+  background: var(--primary-color);
+}
+
+.review-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.review-card {
+  background: var(--bg-light);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1rem 1.2rem;
+  border-left: 4px solid var(--primary-color);
+}
+
+.review-card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.review-card-name {
+  font-weight: 700;
+  color: var(--secondary-color);
+}
+
+.review-card-date {
+  font-size: 0.82rem;
+  color: #999;
+}
+
+.review-card-text {
+  line-height: 1.6;
+  color: #555;
+}
+
+.reviews-note,
+.menu-note {
+  color: #555;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.reviews-error,
+.menu-error {
+  color: #b42318;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.reviews-success {
+  color: #166534;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1000px) {
+  .menu-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .chefs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .navbar {
+    flex-direction: column;
+    padding: 0.5rem 1rem;
+  }
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+  .chefs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Price table ── */
+.table-title {
+  font-size: 1.5rem;
+  color: var(--secondary-color);
+  margin: 2.5rem 0 1rem;
+  text-align: center;
+}
+
+.price-table-wrapper {
+  overflow-x: auto;
+}
+
+.price-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-light);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.price-table thead {
+  background: var(--secondary-color);
+  color: #fff;
+}
+
+.price-table th {
+  padding: 0.85rem 1.2rem;
+  text-align: left;
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+}
+
+.price-table-row td {
+  padding: 0.75rem 1.2rem;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+.price-table-row:hover {
+  background: #fff3e6;
+}
+
+.price-cell {
+  font-weight: 700;
+  color: var(--primary-color);
+  white-space: nowrap;
+}
+
+.ingredients-row td {
+  padding: 0 1.2rem 0.8rem;
+  background: #fffaf5;
+}
+
+/* ── Footer ── */
+.footer {
+  background: var(--secondary-color);
+  color: #fff;
+  margin-top: 3rem;
+}
+
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 1rem 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.footer-brand {
+  font-size: 1.3rem;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.footer-col h4 {
+  color: var(--primary-color);
+  margin-bottom: 0.7rem;
+  font-size: 1rem;
+}
+
+.footer-col p {
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+  line-height: 1.6;
+  color: #ddd;
+}
+
+.footer-col a {
+  color: #ddd;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-col a:hover {
+  color: var(--primary-color);
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+@media (max-width: 700px) {
+  .footer-inner {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+}

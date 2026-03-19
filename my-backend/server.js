@@ -1,76 +1,130 @@
-const express = require('express');
-const cors = require('cors');
-const admin = require("firebase-admin");
-const serviceAccount = require("./serviceAccountKey.json");
+const express = require('express')
+const cors = require('cors')
+const fs = require('fs')
+const path = require('path')
+const admin = require('firebase-admin')
+
+const app = express()
+const PORT = process.env.PORT || 5000
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'http://localhost:5173'
+
+const competitorWords = (process.env.COMPETITOR_WORDS || 'макдональдс,mcdonalds,kfc,pizza hut')
+  .split(',')
+  .map((word) => word.trim().toLowerCase())
+  .filter(Boolean)
+
+const serviceAccountPath = path.join(__dirname, '..', 'serviceAccountKey.json')
+let serviceAccount = null
+
+if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
+  try {
+    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON)
+  } catch (error) {
+    console.error('Invalid FIREBASE_SERVICE_ACCOUNT_JSON:', error.message)
+  }
+}
+
+if (!serviceAccount && fs.existsSync(serviceAccountPath)) {
+  serviceAccount = require(serviceAccountPath)
+}
+
+if (!serviceAccount) {
+  throw new Error('Firebase credentials are missing. Set FIREBASE_SERVICE_ACCOUNT_JSON or add serviceAccountKey.json in project root.')
+}
+
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
-const db = admin.firestore();
-const app = express();
+  credential: admin.credential.cert(serviceAccount),
+})
 
-app.use(cors());
-app.use(express.json());
-// app.use(express.static('public'));
+const db = admin.firestore()
 
-// app.listen(3000, () => {
-//     console.log('Server is running on port 3000');
-// })
+app.use(cors({ origin: FRONTEND_ORIGIN }))
+app.use(express.json())
 
-// app.get('/api/message', (req, res) => {
-//     res.json({ message: 'Hello from the backend!' });
-// });
+const frontendDistPath = path.join(__dirname, '..', 'my-frontend', 'dist')
+if (fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath))
+}
 
-app.listen(5000, () => {
-    console.log('Server is running on port 5000');
-});
+const containsCompetitorWord = (text) => {
+  const normalized = text.toLowerCase()
+  return competitorWords.some((word) => normalized.includes(word))
+}
 
-app.get('/api/message', async (req, res) => {
-    const snapshot = await 
-db.collection('messages').get();
-    const users = [];
-    snapshot.forEach(doc => {
-        users.push({ id: doc.id, ...doc.data() });
-    });
-    res.json(users);
-});
+const serializeReview = (doc) => {
+  const data = doc.data()
+  const createdAt = data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : null
 
-// Verify Firebase Auth Token (Middleware)
-const verifyToken = async (req, res, next) => {
-  const token = req.headers.authorization?.split("Bearer ")[1];
-  if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
+  return {
+    id: doc.id,
+    userEmail: data.userEmail || 'Анонім',
+    userId: data.userId || null,
+    text: data.text || '',
+    rating: data.rating || null,
+    createdAt,
+  }
+}
+
+app.get('/api/message', (req, res) => {
+  res.json({ message: 'Hello from the backend!' })
+})
+
+app.get('/api/reviews', async (req, res) => {
+  try {
+    const snapshot = await db.collection('reviews').orderBy('createdAt', 'desc').get()
+    const items = snapshot.docs.map(serializeReview)
+    res.json({ items })
+  } catch (error) {
+    res.status(500).json({ message: `Failed to load reviews: ${error.message}` })
+  }
+})
+
+app.post('/api/reviews', async (req, res) => {
+  const text = String(req.body.text || '').trim()
+  const rating = Number(req.body.rating)
+  const userEmail = String(req.body.userEmail || 'Анонім').trim()
+  const userId = req.body.userId ? String(req.body.userId).trim() : null
+
+  if (!text) {
+    return res.status(400).json({ message: 'Введіть текст відгуку.' })
   }
 
-  const decodedToken = await admin.auth().verifyIdToken(token);
-  req.user = decodedToken;
-  next();
-};
+  if (text.length > 1000) {
+    return res.status(400).json({ message: 'Відгук має бути до 1000 символів.' })
+  }
 
-// Protected route (Only accessible with a valid token)
-app.get("/api/protected", verifyToken, (req, res) => {
-  res.json({ message: "You have accessed a protected route!", user: req.user });
-});
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return res.status(400).json({ message: 'Оцінка має бути від 1 до 5.' })
+  }
 
-// Login
-// Fetch Protected API Data
-async function getProtectedData() {
-  const user = auth.currentUser;
-  if (!user) {
-    alert("Please log in first.");
-    return;
+  if (containsCompetitorWord(text)) {
+    return res.status(400).json({ message: 'Відгук містить назви конкурентів і не може бути збережений.' })
   }
 
   try {
-    const token = await getIdToken(user);
-    const response = await fetch("http://localhost:5000/api/protected", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const docRef = await db.collection('reviews').add({
+      userEmail,
+      userId,
+      text,
+      rating,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    })
 
-    const data = await response.json();
-    alert(JSON.stringify(data));
+    const createdDoc = await docRef.get()
+    res.status(201).json({ item: serializeReview(createdDoc) })
   } catch (error) {
-    alert("Error fetching protected data: " + error.message);
+    res.status(500).json({ message: `Failed to save review: ${error.message}` })
   }
-}
+})
+
+app.get('/', (req, res) => {
+  if (fs.existsSync(path.join(frontendDistPath, 'index.html'))) {
+    return res.sendFile(path.join(frontendDistPath, 'index.html'))
+  }
+
+  res.send('Backend is running. Build frontend to serve static files from Express.')
+})
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`)
+})
